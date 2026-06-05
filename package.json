@@ -1,26 +1,29 @@
 {
-  "name": "react-v9",
+  "name": "citr-v9-projects",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "format": "prettier --write \"src/**/*.{js,jsx,css,html}\"",
+    "build": "vite build",
+    "dev": "vite",
+    "format": "prettier --write \"src/**/*.{js,jsx}\"",
     "lint": "eslint",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "preview": "vite preview"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "type": "module",
+  "author": "Brandon Westmoreland",
+  "license": "Apache-2.0",
+  "description": "The Complete Intro to React v9, as taught by Brian Holt for Frontend Masters",
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.1",
-    "eslint": "^9.9.1",
-    "eslint-config-prettier": "^9.1.0",
-    "globals": "^15.9.0",
-    "prettier": "^3.8.3",
-    "vite": "^5.4.2"
+    "@vitejs/plugin-react": "4.3.1",
+    "eslint": "9.9.1",
+    "eslint-config-prettier": "9.1.0",
+    "globals": "15.9.0",
+    "prettier": "3.3.3",
+    "vite": "5.4.2"
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   }
 }
