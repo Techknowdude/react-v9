@@ -1,106 +1,139 @@
 import { useState, useEffect } from "react";
+import Cart from "./Cart";
 import Pizza from "./Pizza";
 
+// feel free to change en-US / USD to your locale
 const intl = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
 });
 
 export default function Order() {
-  const [pizzaTypes, setPizzaTypes] = useState([]);
   const [pizzaType, setPizzaType] = useState("pepperoni");
   const [pizzaSize, setPizzaSize] = useState("M");
+  const [pizzaTypes, setPizzaTypes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cart, setCart] = useState([]);
 
-  let price, selectedPizza;
+  async function checkout() {
+    setLoading(true);
 
-  if (!loading) {
-    selectedPizza = pizzaTypes.find((pizza) => pizzaType === pizza.id);
+    await fetch("/api/order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        cart,
+      }),
+    });
+
+    setCart([]);
+    setLoading(false);
   }
 
-  price = intl.format(selectedPizza?.sizes[pizzaSize]);
-
-  async function fetchPizzaTypes() {
-    const pizzaRes = await fetch("/api/pizzas");
-    const pizzaJson = await pizzaRes.json();
-    setPizzaTypes(pizzaJson);
-    setLoading(false);
+  let price, selectedPizza;
+  if (!loading) {
+    selectedPizza = pizzaTypes.find((pizza) => pizzaType === pizza.id);
+    price = intl.format(
+      selectedPizza.sizes ? selectedPizza.sizes[pizzaSize] : "",
+    );
   }
 
   useEffect(() => {
     fetchPizzaTypes();
   }, []);
 
+  async function fetchPizzaTypes() {
+    const pizzasRes = await fetch("/api/pizzas");
+    const pizzasJson = await pizzasRes.json();
+    setPizzaTypes(pizzasJson);
+    setLoading(false);
+  }
+
   return (
-    <div className="order">
-      <h2>Create Order Page</h2>
-      <form>
-        <div>
-          <label htmlFor="pizza-type">Pizza Type:</label>
-          <select
-            onChange={(e) => setPizzaType(e.target.value)}
-            name="pizza-type"
-            value={pizzaType}
-          >
-            {pizzaTypes.map((pizza) => (
-              <option key={pizza.id} value={pizza.id}>
-                {pizza.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="pizza-size">Pizza Size:</label>
-          <div id="pizza-size">
-            <span>
-              <input
-                onChange={(e) => setPizzaSize(e.target.value)}
-                type="radio"
-                name="pizza-size"
-                value="S"
-                checked={pizzaSize === "S"}
-                id="pizza-s"
-              />
-              <label htmlFor="pizza-s">Small</label>
-            </span>
-            <span>
-              <input
-                onChange={(e) => setPizzaSize(e.target.value)}
-                type="radio"
-                name="pizza-size"
-                value="M"
-                checked={pizzaSize === "M"}
-                id="pizza-m"
-              />
-              <label htmlFor="pizza-m">Medium</label>
-            </span>
-            <span>
-              <input
-                onChange={(e) => setPizzaSize(e.target.value)}
-                type="radio"
-                name="pizza-size"
-                value="L"
-                checked={pizzaSize === "L"}
-                id="pizza-l"
-              />
-              <label htmlFor="pizza-l">Large</label>
-            </span>
+    <div className="order-page">
+      <div className="order">
+        <h2>Create Order</h2>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setCart([
+              ...cart,
+              { pizza: selectedPizza, size: pizzaSize, price },
+            ]);
+          }}
+        >
+          <div>
+            <div>
+              <label htmlFor="pizza-type">Pizza Type</label>
+              <select
+                onChange={(e) => setPizzaType(e.target.value)}
+                name="pizza-type"
+                value={pizzaType}
+              >
+                {pizzaTypes.map((pizza) => (
+                  <option key={pizza.id} value={pizza.id}>
+                    {pizza.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="pizza-size">Pizza Size</label>
+              <div>
+                <span>
+                  <input
+                    onChange={(e) => setPizzaSize(e.target.value)}
+                    checked={pizzaSize === "S"}
+                    type="radio"
+                    name="pizza-size"
+                    value="S"
+                    id="pizza-s"
+                  />
+                  <label htmlFor="pizza-s">Small</label>
+                </span>
+                <span>
+                  <input
+                    onChange={(e) => setPizzaSize(e.target.value)}
+                    checked={pizzaSize === "M"}
+                    type="radio"
+                    name="pizza-size"
+                    value="M"
+                    id="pizza-m"
+                  />
+                  <label htmlFor="pizza-m">Medium</label>
+                </span>
+                <span>
+                  <input
+                    onChange={(e) => setPizzaSize(e.target.value)}
+                    checked={pizzaSize === "L"}
+                    type="radio"
+                    name="pizza-size"
+                    value="L"
+                    id="pizza-l"
+                  />
+                  <label htmlFor="pizza-l">Large</label>
+                </span>
+              </div>
+            </div>
+            <button type="submit">Add to Cart</button>
           </div>
-          <button type="submit">Add to Cart</button>
-        </div>
-        <div className="order-pizza">
           {loading ? (
-            <p>Loading...</p>
+            <h3>LOADING …</h3>
           ) : (
-            <Pizza
-              name={selectedPizza.name}
-              description={selectedPizza.description}
-              image={selectedPizza.image}
-            />
+            <div className="order-pizza">
+              <Pizza
+                name={selectedPizza.name}
+                description={selectedPizza.description}
+                image={selectedPizza.image}
+              />
+              <p>{price}</p>
+            </div>
           )}
-          <p>{price}</p>
-        </div>
-      </form>
+        </form>
+      </div>
+      {loading ? <h2>LOADING …</h2> : <Cart checkout={checkout} cart={cart} />}
     </div>
   );
 }

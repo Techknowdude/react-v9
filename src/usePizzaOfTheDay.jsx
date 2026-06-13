@@ -1,14 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useDebugValue } from "react";
 
 export const usePizzaOfTheDay = () => {
   const [pizzaOfTheDay, setPizzaOfTheDay] = useState(null);
 
+  useDebugValue(pizzaOfTheDay ? `${pizzaOfTheDay.name}` : "Loading...");
+
   useEffect(() => {
     async function fetchPizzaOfTheDay() {
-      const pizzaRes = await fetch("/api/pizza-of-the-day");
-      const pizzaJson = await pizzaRes.json();
-      setPizzaOfTheDay(pizzaJson);
+      const response = await fetch("/api/pizza-of-the-day");
+      const data = await response.json();
+      setPizzaOfTheDay(data);
     }
+
     fetchPizzaOfTheDay();
   }, []);
 
