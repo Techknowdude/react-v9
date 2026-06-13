@@ -15,7 +15,11 @@ function PastOrdersRoute() {
     staleTime: 1000 * 30, // 30 seconds
   });
   if (isLoading) {
-    return <div className="past-orders">Loading...</div>;
+    return (
+      <div className="past-orders">
+        <h2>Loading...</h2>
+      </div>
+    );
   }
   return (
     <div className="past-orders">
