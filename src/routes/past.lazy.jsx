@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import getPastOrders from "../api/getPastOrders";
-import getPastOrder from "../api/getPastOrder.js";
+import getPastOrder from "../api/getPastOrder";
 import Modal from "../Modal";
-import { priceConverter } from "../useCurrency.jsx";
+import { priceConverter } from "../useCurrency";
 
 export const Route = createLazyFileRoute("/past")({
   component: PastOrdersRoute,
@@ -81,18 +81,18 @@ function PastOrdersRoute() {
                 </tr>
               </thead>
               <tbody>
-                {pastOrderData.orderItems.map((pizza) => {
+                {pastOrderData.orderItems.map((pizza) => (
                   <tr key={`${pizza.pizzaTypeId}_${pizza.size}`}>
                     <td>
                       <img src={pizza.image} alt={pizza.name} />
-                      <td>{pizza.name}</td>
-                      <td>{pizza.size}</td>
-                      <td>{pizza.quantity}</td>
-                      <td>{priceConverter(pizza.price)}</td>
-                      <td>{priceConverter(pizza.total)}</td>
                     </td>
-                  </tr>;
-                })}
+                    <td>{pizza.name}</td>
+                    <td>{pizza.size}</td>
+                    <td>{pizza.quantity}</td>
+                    <td>{priceConverter(pizza.price)}</td>
+                    <td>{priceConverter(pizza.total)}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           ) : (
